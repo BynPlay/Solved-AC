@@ -1,0 +1,35 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+const int INF = 1e9;
+
+int main() {
+    int n;
+    cin >> n;
+
+    vector<int> dp(n + 6, INF);
+
+    dp[2] = 1; 
+    dp[4] = 2; 
+    dp[5] = 1; 
+
+    for (int i = 6; i <= n; i++) {
+        if (dp[i - 2] != INF) {
+            dp[i] = min(dp[i], dp[i - 2] + 1);
+        }
+        if (dp[i - 5] != INF) {
+            dp[i] = min(dp[i], dp[i - 5] + 1);
+        }
+    }
+
+    if (dp[n] == INF) {
+        cout << -1 << endl; 
+    } else {
+        cout << dp[n] << endl;
+    }
+
+    return 0;
+}
