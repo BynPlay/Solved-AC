@@ -1,0 +1,26 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int N, curMood;
+    cin >> N >> curMood;
+
+    double p[2][2];
+    cin >> p[0][0] >> p[0][1] >> p[1][0] >> p[1][1];
+
+    vector<pair<double,double>> dp(N+1, {0.0,0.0}); // N+1로 수정
+    
+    if(curMood == 0) dp[0] = {1.0, 0.0};
+    else dp[0] = {0.0, 1.0};
+    
+    for(int i = 1; i <= N; i++){
+        dp[i].first  = dp[i-1].first * p[0][0] + dp[i-1].second * p[1][0];
+        dp[i].second = dp[i-1].first * p[0][1] + dp[i-1].second * p[1][1];
+    }
+
+    cout << int(dp[N].first * 1000 + 0.5) << "\n";
+    cout << int(dp[N].second * 1000 + 0.5) << "\n";
+}
