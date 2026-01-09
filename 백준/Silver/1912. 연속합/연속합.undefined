@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+const long long INF = 4e18;
+
+int main()
+{
+    int N;
+    cin >> N;
+
+    vector<long long> R(N+1,0);
+
+    for(int i = 1; i <= N; i++){
+        cin >> R[i];
+    }
+
+    vector<long long> DP(N+1,0);
+
+    DP[1] = R[1];
+
+    for(int i = 2; i <= N; i++){
+        DP[i] = max(DP[i-1] + R[i],R[i]);
+    }
+
+    long long ans = DP[1];
+    for(int i = 1; i <= N; i++){
+        ans = max(DP[i],ans);
+    }
+
+    cout << ans;
+    
+    return 0;
+    
+}
