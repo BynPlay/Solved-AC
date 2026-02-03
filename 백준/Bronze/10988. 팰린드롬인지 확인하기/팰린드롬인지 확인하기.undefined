@@ -1,0 +1,32 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<cmath>
+#include<string>
+#include<set>
+#include <map>
+#include <unordered_map>
+
+using namespace std;
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+
+    string s;
+    cin >> s;
+
+    string s2 = s;
+    reverse(s.begin(),s.end());
+
+    if(s == s2){
+        cout << 1;
+    }
+    else{
+        cout << 0;
+    }
+
+}
+
+    
