@@ -1,0 +1,58 @@
+#include<iostream>
+#include<vector>
+#include<stack>
+#include<algorithm>
+#include<cmath>
+#include<string>
+#include<set>
+#include <map>
+#include <unordered_map>
+
+using namespace std;
+
+int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    string s;
+    cin >> s;
+
+    string explosive;
+    cin >> explosive;
+
+    stack<char>stack;
+    int n = explosive.size();
+
+    for(auto &i:s){
+        stack.push(i);
+        if(stack.size() >= n){
+            char tmp [n];
+            for(int j = 1; j <= n; j++){
+                tmp[n-j] = stack.top();
+                stack.pop();
+            }
+            string tmpStr(tmp, n);
+            if(tmpStr != explosive){
+                for(int k = 0; k < n; k++){
+                    stack.push(tmpStr[k]);
+            }
+        }   
+        }
+    }
+
+    if(stack.empty()){
+    cout << "FRULA";
+    } 
+    else {
+        string result = "";
+while(!stack.empty()){
+    result += stack.top(); 
+    stack.pop();
+}
+reverse(result.begin(), result.end());
+cout << result;
+}
+
+}
+
+    
