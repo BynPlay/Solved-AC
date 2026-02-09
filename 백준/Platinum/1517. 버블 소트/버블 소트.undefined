@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+long long ans{0};
+
+void Merge(vector<int>&v,int left,int mid,int right){
+    int size_l = mid - left + 1;
+    int size_r = right - mid;
+
+    vector<int>L(size_l);
+    vector<int>R(size_r);
+
+    for(int i = 0;i<size_l;i++){
+        L[i] = v[left+i];
+    }
+    for(int i = 0;i<size_r;i++){
+        R[i] = v[mid + 1 + i];
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = left;
+
+    while(i < size_l && j < size_r){
+        if(L[i] <= R[j]){
+            v[k] = L[i];
+            i++;
+        }
+        else{
+            for(int n = i; n < size_l; n++){
+                ans++;
+            }
+            v[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while(i < size_l){
+        v[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while(j < size_r){
+        v[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergesort(vector<int>&v,int left, int right){
+    if(left < right){
+        int mid = left + (right-left)/2;
+        mergesort(v,left,mid);
+        mergesort(v,mid+1,right);
+        Merge(v,left,mid,right);
+    }
+}
+
+
+int main() {
+
+    int N;
+    cin >> N;
+
+    vector<int>A(N);
+
+    for(int i = 0; i < N; i++){
+        cin >> A[i];
+    }
+
+    mergesort(A,0,N-1);
+
+    cout << ans;
+    
+}
