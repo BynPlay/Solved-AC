@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+using namespace std;
+
+int lower_bound(const vector<int>&v,int target){
+    int left = 0; int right = v.size();
+
+    while(left < right){
+        int mid = left + (right - left) / 2;
+        if(target <= v[mid]){
+            right = mid;
+        }
+        else{
+            left = mid + 1;
+        }
+    }
+    
+    return left;
+}
+
+int upper_bound(const vector<int>& v,int target){
+    int left = 0; int right = v.size();
+
+    while(left < right){
+        int mid = left + (right - left) / 2;
+        if(target < v[mid]){
+            right = mid;
+        }
+        else{
+            left = mid + 1;
+        }
+    }
+
+    return left;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    cin >> N;
+
+    vector<int>A(N);
+
+    for(int i = 0; i < N; i++){
+        cin >> A[i];
+    }
+
+    sort(A.begin(),A.end());
+
+    int M;
+    cin >> M;
+
+    for(int i = 0; i < M; i++){
+        int find;
+        cin >> find;
+        cout << upper_bound(A,find) - lower_bound(A,find) << ' ';
+    }
+}
