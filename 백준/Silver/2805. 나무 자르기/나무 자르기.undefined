@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <set>
+using namespace std;
+
+//높이는 높을수록 좋음
+
+long long sum_rest(const vector<long long>&v, int H){
+    long long sum {0};
+
+    for(auto & i : v){
+        if(i-H > 0){
+            sum += i - H;
+        }
+
+    }
+
+    return sum;
+}
+
+int find_optimal(const vector<long long>&v,int M){
+    int left = 0; int right = v[v.size()-1];
+
+    while(left < right){
+        int H = left + (right - left) / 2;
+        if(sum_rest(v,H) >= M){
+            left = H+1;
+        }
+        else{
+            right = H;
+        }
+    }
+
+    return left;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    long long N, M;
+    cin >> N >> M;
+
+    vector<long long>v(N);
+
+    for(int i = 0; i < N; i++){
+        cin >> v[i];
+    }
+
+    sort(v.begin(),v.end());
+
+    cout << find_optimal(v,M)-1;
+
+}
