@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+//구분
+
+int upper_bound(vector<long long>&v, long long target){
+    
+    int left = 0; int right = v.size();
+
+    while(left < right){
+        int mid = left + (right - left) / 2;
+        if(target < v[mid]){
+            right = mid;
+        }
+        else{
+            left = mid + 1;
+        }
+    }
+    
+    return left;
+}
+
+int lower_bound(vector<long long>&v, long long target){
+    
+    int left = 0; int right = v.size();
+
+    while(left < right){
+        int mid = left + (right - left) / 2;
+        if(target <= v[mid]){
+            right = mid;
+        }
+        else{
+            left = mid + 1;
+        }
+    }
+    
+    return left;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N,M;
+    cin >> N >> M;
+    vector<long long>points(N);
+    vector<pair<long long,long long>>lines(M);
+    for(int i = 0; i < N ; i++){
+        cin >> points[i];
+    }
+    for(int i = 0; i < M ; i++){
+        cin >> lines[i].first >> lines[i].second;
+    }
+    sort(points.begin(),points.end());
+
+    int ans {0};
+    for(auto & i : lines){
+        cout << upper_bound(points,i.second) - lower_bound(points,i.first) << '\n';
+    }
+
+}
