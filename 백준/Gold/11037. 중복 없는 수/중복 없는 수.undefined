@@ -1,0 +1,42 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <string>
+#include <set>
+
+using namespace std;
+
+bool isValid(long long N){
+    set<long long> digits;
+
+    while (N > 0) {
+        long long d = N % 10;
+        if (digits.count(d) || d == 0) return false; 
+        digits.insert(d);
+        N /= 10;
+    }
+    return true;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    long long N;
+    while(cin >> N){
+        bool chk {0};
+        while(N <= 999999999){
+            N++;
+            if(isValid(N) == true){
+                cout << N << endl;
+                chk = 1;
+                break;
+            }
+        }
+        if(chk == 0){
+            cout << 0 << endl;
+        }
+        }
+        
+    }
