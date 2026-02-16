@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+int check_server(vector<vector<long long>>server,int N,long long max, long long sum){
+    long long left {0}; long long right = max;
+    
+    while(left < right){
+    long long on {0};
+    long long mid = left + (right-left) / 2;
+    for(int i = 0;i < N; i++){
+        for(int j = 0;j < N; j++){
+            if(server[i][j] - mid > 0){
+                on += server[i][j] - mid;
+            };
+        }
+    }
+        
+    if(on <= sum / 2){
+        right = mid;
+    }
+    else{
+        left = mid + 1;
+    }
+    }
+
+    return left;
+    
+   
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    cin >> N;
+    vector<vector<long long>>server(N,vector<long long>(N));
+
+    long long max {0};
+    long long sum {0};
+    for(int i = 0;i < N; i++){
+        for(int j = 0;j < N; j++){
+            cin >> server[i][j];
+            sum += server[i][j];
+            if(server[i][j] > max){
+                max = server[i][j];
+            }
+    }
+    }
+
+    cout << check_server(server,N,max,sum);
+
+    
+
+}
