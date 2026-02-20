@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int A;
+    cin >> A;
+    vector<int>v(A);
+
+    for(int i = 0; i < A; i++){
+        cin >> v[i];
+    }
+
+    vector<pair<int,int>>DP(A,{1,-1});
+
+    for(int i = 1; i < A ;i++){
+        for(int j = i-1; j >= 0 ;j--){
+            if(DP[i].first < DP[j].first+1 && v[i] > v[j]){
+                DP[i].first = DP[j].first+1;
+                DP[i].second = j;
+            }
+    }
+    }
+
+    int ans {0};
+    int maxLoc {0};
+    for(int i = 0; i < A; i++){
+        if(ans < DP[i].first){
+            ans = DP[i].first;
+            maxLoc = i;
+        }
+    }
+    
+    vector<int>numbers;
+    while(true){
+        if(maxLoc < 0){
+            break;
+        }
+        numbers.push_back(v[maxLoc]);
+        maxLoc = DP[maxLoc].second;
+    }
+    sort(numbers.begin(),numbers.end());
+    cout << ans << endl;
+    for(auto &i:numbers){
+        cout << i << ' ';
+    }
+    
+}
