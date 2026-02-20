@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int T;
+    cin >> T;
+
+    for(int o = 0; o < T ;o++){
+
+    int N;
+    cin >> N;
+    vector<int>A(N);
+
+    for(int i = 0; i < N; i++){
+        cin >> A[i];
+    }
+    sort(A.begin(), A.end());
+    vector<int> result(N);
+    int left = 0, right = N-1;
+    for(int i = N-1; i >= 0; i--){
+        if(i % 2 == 0) result[left++] = A[i];
+        else result[right--] = A[i];
+    }
+
+    int ans {0};
+    for(int i = 1;i < N;i++){
+        if(abs(result[i] - result[i-1]) > ans){
+            ans = abs(result[i] - result[i-1]);
+        }
+    }
+    if(abs(result[N-1] - result[0]) > ans){
+        ans = abs(result[N-1] - result[0]);
+    }
+    cout << ans << endl;
+    }
+}
