@@ -1,0 +1,36 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int A;
+    cin >> A;
+    vector<int>v(A);
+
+    for(int i = 0; i < A; i++){
+        cin >> v[i];
+    }
+
+    vector<int>DP(A,1);
+
+    for(int i = 1;i < A; i++){
+        for(int j = i-1; j>=0; j--){
+            if(DP[i] < DP[j] + 1 && v[j] < v[i]){
+                DP[i] = DP[j] + 1;
+            }
+        }
+    }
+
+    int ans{0};
+    for(auto &i: DP){
+        ans = max(ans,i);
+    }
+    cout << ans;
+}
