@@ -34,17 +34,26 @@ int main() {
 
     sort(v.begin(),v.end(),makerank);
 
+        /*
+    for(auto & i : v){
+        cout << get<0>(i) << ' ';
+    }*/
+
     map<int,int>Ranking;
     int Rank {1};
+    int under {0};
     Ranking[get<0>(v[0])] = Rank;
         
     for(int i = 1; i < N; i++){
         if(get<1>(v[i]) == get<1>(v[i-1]) && get<2>(v[i]) == get<2>(v[i-1]) && get<3>(v[i]) == get<3>(v[i-1])){
         Ranking[get<0>(v[i])] = Rank;
+        under++;
         }
         else{
-        Ranking[get<0>(v[i])] = Rank;
         Rank++;
+        Rank += under;
+        Ranking[get<0>(v[i])] = Rank;
+        under = 0;
         }
     }
 
