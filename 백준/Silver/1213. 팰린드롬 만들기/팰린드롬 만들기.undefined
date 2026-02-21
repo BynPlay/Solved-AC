@@ -1,0 +1,83 @@
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <map>
+#include <string>
+
+using namespace std;
+
+int main() {
+
+    string name;
+    cin >> name;
+    
+    vector<int>alp_num(26,0);
+    for(auto &i : name){
+        alp_num[i - 'A'] += 1;
+    }
+
+    if(name.size() % 2 == 0){
+        bool imp {0};
+        for(auto &i : name){
+            if(alp_num[i - 'A'] % 2 == 1){
+                imp = 1;
+                break;
+            }
+        }
+        if(imp == 1){
+            cout << "I'm Sorry Hansoo";
+        }
+        else{
+            for(int i = 0; i < 26;i++){
+                for(int j = 0; j < alp_num[i] / 2; j++){
+                    char ch = 'A' + i;
+                    cout << ch;
+                }   
+            }
+            for(int i = 25; i >= 0;i--){
+                for(int j = 0; j < alp_num[i] / 2; j++){
+                    char ch = 'A' + i;
+                    cout << ch;
+                }   
+            }
+        }
+    }
+        
+    else{
+        int imp {0};
+        int odd_idx;
+        for(int i = 0; i < 26 ;i++){
+            if(alp_num[i] % 2 == 1){
+                imp++;
+                if(imp >= 2){
+                    break;
+                }
+                odd_idx = i;
+            }
+        }
+        
+        if(imp >= 2){
+            cout << "I'm Sorry Hansoo";
+        }
+        else{
+            for(int i = 0; i < 26;i++){
+                for(int j = 0; j < alp_num[i] / 2; j++){
+                    char ch = 'A' + i;
+                    cout << ch;
+                }   
+            }
+            char ch_mid = 'A' + odd_idx;
+            cout << ch_mid;
+            for(int i = 25; i >= 0;i--){
+                for(int j = 0; j < alp_num[i] / 2; j++){
+                    char ch = 'A' + i;
+                    cout << ch;
+                }   
+            }
+        }
+        
+        
+    }
+}
