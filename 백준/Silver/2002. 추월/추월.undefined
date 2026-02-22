@@ -1,0 +1,49 @@
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <map>
+#include <string>
+
+using namespace std;
+
+int main() {
+    int N;
+    cin >> N;
+
+    vector<pair<string,int>>ent(N);
+    
+    for(int i = 0 ; i < N ;i++){
+        cin >> ent[i].first;
+        ent[i].second = i + 1;
+    }
+
+    vector<pair<string,int>>out(N);
+    for(int j = 0 ; j < N ;j++){
+        cin >> out[j].first;
+        int chk {0};
+        for(auto & car: ent){
+            if(car.first == out[j].first){
+                chk = car.second; 
+            }
+        }
+        out[j].second = chk;
+    }
+
+    int ans {0};
+    for(int a = 0; a < N-1; a++){
+        bool choowul {false};
+        for(int b = a + 1; b < N; b++){
+            if(out[a].second > out[b].second){
+                choowul = true;
+            }
+        }
+        if(choowul == true){
+            //cout << out[a].first << endl;
+            ans++;
+        }
+    }
+    cout << ans;
+
+}
