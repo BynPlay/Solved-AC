@@ -1,0 +1,132 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <stack>
+#include <queue>
+#include <deque>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    cin >> N;
+    int K;
+    cin >> K;
+    vector<pair<int,int>>apples(K);
+    for(int i = 0; i < K ;i++){
+        pair<int,int>p;
+        cin >> p.first >> p.second;
+        apples[i] = p;
+    }
+    int L;
+    cin >> L;
+    vector<pair<int,char>>directions(L);
+    for(int i = 0; i < L ; i++){
+        pair<int,char>p;
+        cin >> p.first >> p.second;
+        directions[i] = p;
+    }
+
+    deque<pair<int,int>>snake;
+    pair<int,int>headPos = {1,1};
+    snake.push_front({1,1});
+    bool sizeUP = false;
+    bool gameover = false;
+    char now_state = 'R';
+    int second {0};
+    
+    while(true){
+        
+        second++;
+        
+        if(now_state == 'R'){
+            headPos.second += 1;
+        }
+        else if(now_state == 'L'){
+            headPos.second -= 1;
+        }
+        else if(now_state == 'D'){
+            headPos.first += 1;
+        }
+        else if(now_state == 'J'){
+            headPos.first -= 1;
+        }
+
+        //사과먹기
+        for(int i = 0; i < apples.size();i++){
+            if(headPos.first == apples[i].first && headPos.second == apples[i].second){
+                sizeUP = true;
+                apples.erase(apples.begin() + i);
+                break;
+            }
+        }
+        
+        //게임 오버
+        if(headPos.first > N || headPos.second > N || headPos.first < 1 || headPos.second < 1){
+            gameover = true;
+        }
+        for(auto &body : snake){
+            if(body.first == headPos.first && body.second == headPos.second)
+            {gameover = true;}
+        }
+
+        if(gameover == true){
+            break;
+        }
+
+        if(sizeUP == false){
+            snake.pop_back();
+        }
+        else{
+            sizeUP = false;
+        }  
+
+        snake.push_front(headPos);
+
+        //방향 전환
+        for(auto &i: directions){
+            if(second == i.first){
+                if(now_state == 'R'){
+                    if(i.second == 'D'){
+                        now_state = 'D';
+                    }
+                    else if(i.second == 'L'){
+                        now_state = 'J';
+                    }
+                }
+                else if(now_state == 'L'){
+                    if(i.second == 'D'){
+                        now_state = 'J';
+                    }
+                    else if(i.second == 'L'){
+                        now_state = 'D';
+                    }
+                }
+                else if(now_state == 'J'){
+                    if(i.second == 'D'){
+                        now_state = 'R';
+                    }
+                    else if(i.second == 'L'){
+                        now_state = 'L';
+                    }
+                }
+                else if(now_state == 'D'){
+                    if(i.second == 'D'){
+                        now_state = 'L';
+                    }
+                    else if(i.second == 'L'){
+                        now_state = 'R';
+                    }
+                }
+            }
+        }
+    }
+    cout << second;
+    
+
+}
