@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+vector<int> drow = {1,-1,0,0};
+vector<int> dcol = {0,0,1,-1};
+const int INF = 1e9;
+
+int Dikstra(const vector<vector<int>>& v, int N){
+    priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<>>qp;
+    vector<vector<int>>dist(N,vector<int>(N,INF));
+    dist[0][0] = v[0][0];
+    vector<vector<bool>>visited(N,vector<bool>(N,false));
+    
+    qp.push({v[0][0],{0,0}});
+    
+
+    while(!qp.empty()){
+        int curDist = qp.top().first;
+        pair<int,int> curnode = qp.top().second;
+        qp.pop();
+
+        if(visited[curnode.first][curnode.second]){
+            continue;
+        }
+
+        visited[curnode.first][curnode.second] = true;
+
+        for(int i = 0; i < 4; i++){
+            if(curnode.first + drow[i] >= 0 && curnode.first + drow[i] < N && curnode.second + dcol[i] >= 0 && curnode.second + dcol[i] < N){
+                if(visited[curnode.first + drow[i]][curnode.second + dcol[i]] == false && dist[curnode.first + drow[i]][curnode.second + dcol[i]] > curDist + v[curnode.first + drow[i]][curnode.second + dcol[i]]){
+                    dist[curnode.first + drow[i]][curnode.second + dcol[i]] = curDist + v[curnode.first + drow[i]][curnode.second + dcol[i]];
+                    qp.push({dist[curnode.first + drow[i]][curnode.second + dcol[i]],{curnode.first + drow[i],curnode.second + dcol[i]}});
+                }
+            }
+        }
+    
+    }
+    return dist[N-1][N-1];
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    int cnt = 1;
+    while(cin >> N && N != 0){
+
+    vector<vector<int>>v(N,vector<int>(N));
+
+    for(int i = 0; i < N;i++){
+        for(int j = 0; j < N;j++){
+            cin >> v[i][j];
+        }
+    }
+
+     cout << "Problem " << cnt << ": " << Dikstra(v,N) << endl;
+        cnt++;
+    }
+    
+    
+
+}
