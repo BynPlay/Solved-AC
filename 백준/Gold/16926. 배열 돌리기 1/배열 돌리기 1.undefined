@@ -1,0 +1,55 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+vector<vector<int>> rotate_matrix(const vector<vector<int>>&matrix, int N, int M){
+    vector<vector<int>>rotated_matrix(N,vector<int>(M));
+    int layer = round(min(N,M) / 2.0);
+
+    pair<int,int>start = {0,0};
+    pair<int,int>end = {N,M};
+
+    while(layer > 0){
+        for(int row = start.first; row < end.first - 1 ;row++){rotated_matrix[row+1][start.second] = matrix[row][start.second];}
+        for(int col = start.second; col < end.second - 1 ;col++){rotated_matrix[end.first-1][col+1] = matrix[end.first-1][col];}
+        for(int row = end.first - 1; row > start.first ;row--){rotated_matrix[row-1][end.second-1] = matrix[row][end.second-1];}
+        for(int col = end.second - 1; col > start.second ;col--){rotated_matrix[start.first][col-1] = matrix[start.first][col];}
+
+        start.first++; start.second++; end.first--; end.second--;
+        layer--;
+    }
+
+    return rotated_matrix;
+}
+
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N,M,R;
+    cin >> N >> M >> R;
+    vector<vector<int>>matrix(N,vector<int>(M));
+
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < M; j++){
+            cin >> matrix[i][j];
+        }
+    }
+
+    for(int i = 0; i < R; i++){
+        matrix = rotate_matrix(matrix,N,M);
+    }
+
+    for(auto &i: matrix){
+        for(auto &j: i){
+        cout << j << ' ';
+    }
+        cout << endl;
+    }
+
+}
