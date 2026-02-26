@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+
+using namespace std;
+
+void rotate_matrix(vector<vector<int>>&matrix, int N, int M, pair<int,int>start, pair<int,int>end, int R){
+    int rows = end.first - start.first; int cols =  end.second - start.second;
+    int size = 2 * (rows + cols) - 4;
+    int shift = R % size;
+    vector<int>projected_matrix(size);
+    int idx = 0;
+
+    for(int row = start.first; row < end.first - 1 ;row++){projected_matrix[idx] = matrix[row][start.second]; idx++;}
+    for(int col = start.second; col < end.second - 1 ;col++){projected_matrix[idx] = matrix[end.first-1][col]; idx++;}
+    for(int row = end.first - 1; row > start.first ;row--){projected_matrix[idx] = matrix[row][end.second-1]; idx++;}
+    for(int col = end.second - 1; col > start.second ;col--){projected_matrix[idx] = matrix[start.first][col]; idx++;}
+
+    vector<int>result(size);
+    for(int i = 0; i < size; i++){
+        result[i] = projected_matrix[(i - shift + size) % size];
+    }
+
+    idx = 0;
+    for(int row = start.first; row < end.first - 1 ;row++){matrix[row][start.second] = result[idx]; idx++;}
+    for(int col = start.second; col < end.second - 1 ;col++){matrix[end.first-1][col] = result[idx]; idx++;}
+    for(int row = end.first - 1; row > start.first ;row--){matrix[row][end.second-1] = result[idx]; idx++;}
+    for(int col = end.second - 1; col > start.second ;col--){matrix[start.first][col] = result[idx]; idx++;}
+}
+
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N,M,R;
+    cin >> N >> M >> R;
+    vector<vector<int>>matrix(N,vector<int>(M));
+
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < M; j++){
+            cin >> matrix[i][j];
+        }
+    }
+
+    pair<int,int>start = {0,0};
+    pair<int,int>end = {N,M};
+    int layer = round(min(N,M) / 2);
+
+    while(layer > 0){
+        rotate_matrix(matrix, N, M, start, end, R);
+
+        start.first++; start.second++;
+        end.first--; end.second--;
+        layer--;
+    }
+    
+    for(auto &i: matrix){
+        for(auto &j: i){
+        cout << j << ' ';
+    }
+        cout << endl;
+    }
+
+}
