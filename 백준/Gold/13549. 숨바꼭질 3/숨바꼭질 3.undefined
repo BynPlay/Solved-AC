@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+const int INF = 1e9;
+
+void dikstra_cnt(vector<int>&seconds,int N){
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+    pq.push({0,N});
+    seconds[N] = 0;
+
+    while(!pq.empty()){
+        pair<int,int>now = pq.top();
+        pq.pop();
+
+        if(now.first > seconds[now.second]){continue;}
+
+
+        if(2 * now.second <= 100000){
+            if(seconds[2 * now.second] > now.first ){
+            pq.push({now.first,2 * now.second});
+            seconds[2 * now.second] = seconds[now.second];
+        }
+        }
+
+        if(now.second + 1 <= 100000){
+            if(seconds[now.second + 1] > now.first + 1 ){
+            pq.push({now.first + 1,now.second + 1});
+            seconds[now.second + 1] = seconds[now.second] + 1;
+        }}
+
+        if(now.second - 1 >= 0 ){
+            if(seconds[now.second - 1] > now.first + 1){
+            pq.push({now.first + 1,now.second - 1});
+            seconds[now.second - 1] = seconds[now.second] + 1;
+        }
+        } 
+    }
+    
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N; int K;
+    cin >> N >> K;
+    vector<int>seconds(100001,INF);
+    dikstra_cnt(seconds,N);
+    cout << seconds[K];
+    
+}
