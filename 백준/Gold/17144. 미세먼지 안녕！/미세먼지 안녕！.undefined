@@ -1,0 +1,115 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+vector<int>d_row = {1,-1,0,0};
+vector<int>d_col = {0,0,1,-1};
+const int INF = 1e9;
+
+void diffuse(vector<vector<int>>&room,int R, int C, int up,int down){
+    vector<vector<int>>tmp(R+1,vector<int>(C+1,0));
+    
+    for(int row = 1; row <= R; row++){
+        for(int col = 1; col <= C;col++){
+            if(room[row][col] > 4){
+                int diffCnt = 0;
+                int diffAmount = room[row][col] / 5;
+                for(int n = 0; n < 4; n++){
+                    if(row + d_row[n] >= 1 && row + d_row[n] <= R && col + d_col[n] >= 1 && col + d_col[n] <= C && room[row + d_row[n]][col + d_col[n]] != -1){
+                            tmp[row + d_row[n]][col + d_col[n]] += diffAmount;
+                            diffCnt++;
+                        }
+                    }
+                room[row][col] -= diffAmount * diffCnt;
+                }
+    
+            }
+    }
+
+     for(int row = 1; row <= R; row++){
+        for(int col = 1; col <= C;col++){
+            room[row][col] += tmp[row][col];
+    }
+     }
+}
+
+void wind(vector<vector<int>>&room,int R, int C, int up,int down){
+
+    for(int row = up - 1; row > 1 ;row--){
+        room[row][1] = room[row-1][1];
+    }
+    for(int row = down + 1; row < R ;row++){
+        room[row][1] = room[row+1][1];
+    }
+
+    for(int col = 1; col < C; col++){
+        room[1][col] = room[1][col+1];
+        room[R][col] = room[R][col+1];
+    }
+
+    for(int row = 1; row < up; row++){
+        room[row][C] = room[row+1][C];
+    }
+    for(int row = R; row > down ;row--){
+        room[row][C] = room[row-1][C];
+    }
+
+    for(int col = C; col > 2; col--){
+        room[up][col] = room[up][col-1];
+        room[down][col] = room[down][col-1];
+    }
+    room[up][2] = 0;
+    room[down][2] = 0;
+    
+}
+    
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int R,C,T;
+    cin >> R >> C >> T;
+    vector<vector<int>>room(R+1,vector<int>(C+1));
+
+    int up {-1};
+    int down {-1};
+
+    //입력
+    for(int i = 1; i <= R;i++){
+        for(int j = 1; j <= C;j++){
+            cin >> room[i][j];
+            if(room[i][j] == -1){
+                if(up == -1){
+                    up = i;
+                }
+                else{
+                    down = i;
+                }
+            }
+        }
+    }
+
+    //순환
+    while(T > 0){
+        diffuse(room,R,C,up,down);
+        wind(room,R,C,up,down);
+        T--;
+    }
+    
+    //출력
+    int ans {0};
+    for(int i = 1; i <= R;i++){
+        for(int j = 1; j <= C;j++){
+            if(room[i][j] > 0){
+                ans += room[i][j];
+            }
+        }
+    }
+    cout << ans;  
+}
