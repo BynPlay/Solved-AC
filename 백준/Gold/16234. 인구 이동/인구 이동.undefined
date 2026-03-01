@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+const int INF = 1e9; 
+
+vector<int>d_row = {1,-1,0,0};
+vector<int>d_col = {0,0,1,-1};
+
+bool populationCheck(vector<vector<int>>& population, int N, vector<vector<bool>>& visited, int start_row, int start_col, int L, int R){
+    vector<pair<int,int>>alliance;
+
+    queue<pair<int,int>>q;
+    q.push({start_row,start_col});
+    visited[start_row][start_col] = true;
+    alliance.push_back({start_row,start_col});
+    bool Is_move {false};
+
+    while(!q.empty()){
+        pair<int,int>now = q.front();
+        q.pop();
+
+        for(int i = 0; i < 4 ;i++){
+            int nrow = now.first + d_row[i]; int ncol= now.second + d_col[i];
+            if(nrow >= 0 && nrow < N && ncol >= 0 && ncol < N){
+                if(abs(population[now.first][now.second] - population[nrow][ncol]) >= L && visited[nrow][ncol] == false  && abs(population[now.first][now.second] - population[nrow][ncol]) <= R){
+                    q.push({nrow,ncol});
+                    visited[nrow][ncol] = true;
+                    alliance.push_back({nrow,ncol});
+                    Is_move = true;
+                }
+            }
+        } 
+    }
+
+    int sum {0};
+    for(auto &i : alliance){
+        sum += population[i.first][i.second];
+    }
+    int part = sum / alliance.size();
+    for(auto &i : alliance){
+        population[i.first][i.second] = part;
+    }
+
+    return Is_move;
+}
+
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N,L,R;
+    cin >> N >> L >> R;
+    vector<vector<int>>population(N,vector<int>(N));
+    for(int i = 0; i < N ;i++){
+        for(int j = 0; j < N ;j++){
+            cin >> population[i][j];
+                }
+    }
+
+    int day {0};
+    
+    while(true){
+        vector<vector<bool>>visited(N,vector<bool>(N));
+        bool Is_move {false};
+        
+        for(int row = 0; row < N ;row++){
+            for(int col = 0; col < N ;col++){
+                if(visited[row][col] == false){
+                    if(populationCheck(population, N, visited, row, col, L, R) == true){
+                        Is_move = true;
+                    }
+                }
+                    }
+        }
+        
+        if(Is_move == false){
+            break;
+        }
+
+        day++;
+    }
+
+    cout << day;
+
+}
