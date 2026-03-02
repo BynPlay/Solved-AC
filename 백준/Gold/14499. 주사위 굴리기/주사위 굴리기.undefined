@@ -1,0 +1,76 @@
+#include <iostream>
+using namespace std;
+
+int N, M, x, y, K;
+int board[20][20];
+
+// 0=위, 1=아래, 2=북, 3=남, 4=동, 5=서
+int dice[6] = {0, 0, 0, 0, 0, 0};
+
+int dx[5] = {0, 0, 0, -1, 1}; // 동,서,북,남
+int dy[5] = {0, 1, -1, 0, 0};
+
+void roll(int dir) {
+    int tmp = dice[0];
+
+    if (dir == 1) { // 동
+        dice[0] = dice[5];
+        dice[5] = dice[1];
+        dice[1] = dice[4];
+        dice[4] = tmp;
+    }
+    else if (dir == 2) { // 서
+        dice[0] = dice[4];
+        dice[4] = dice[1];
+        dice[1] = dice[5];
+        dice[5] = tmp;
+    }
+    else if (dir == 3) { // 북
+        dice[0] = dice[3];
+        dice[3] = dice[1];
+        dice[1] = dice[2];
+        dice[2] = tmp;
+    }
+    else if (dir == 4) { // 남
+        dice[0] = dice[2];
+        dice[2] = dice[1];
+        dice[1] = dice[3];
+        dice[3] = tmp;
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N >> M >> x >> y >> K;
+
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < M; j++)
+            cin >> board[i][j];
+
+    while (K--) {
+        int dir;
+        cin >> dir;
+
+        int nx = x + dx[dir];
+        int ny = y + dy[dir];
+
+        if (nx < 0 || nx >= N || ny < 0 || ny >= M)
+            continue;
+
+        x = nx;
+        y = ny;
+
+        roll(dir);
+
+        if (board[x][y] == 0) {
+            board[x][y] = dice[1];   // 바닥 → 칸
+        } else {
+            dice[1] = board[x][y];   // 칸 → 바닥
+            board[x][y] = 0;
+        }
+
+        cout << dice[0] << "\n"; // 윗면 출력
+    }
+}
