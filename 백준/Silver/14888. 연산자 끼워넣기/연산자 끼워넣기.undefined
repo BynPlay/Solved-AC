@@ -1,0 +1,98 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+const int INF = 1e9; 
+
+int min_ans = {INF};
+int max_ans = {-INF};
+
+int calbyOp(int output,const int num,char op){
+    if(op == '+'){
+        return output + num;
+    }
+    else if(op == '-'){
+        return output - num;
+    }
+    else if(op == 'x'){
+        return output * num;
+    }
+    else if(op == '/'){
+        return output / num;
+    }
+    
+    return 0;
+}
+
+void calculateComb(const vector<int>& numbers, const int N, const vector<char>& operators, int cnt, vector<bool>& visited, vector<char>& opOrder){
+
+    if(cnt == N-1){
+        int output = numbers[1];
+        for(int i = 2; i <= N; i++){
+            output = calbyOp(output,numbers[i],opOrder[i-2]);
+        }
+
+        if(output < min_ans){
+            min_ans = output;
+        }
+        if(output > max_ans){
+            max_ans = output;
+        }
+        
+    }
+    
+    for(int i = 0; i < N-1; i++){
+        if(visited[i] == false){
+            visited[i] = true;
+            opOrder.push_back(operators[i]);
+            calculateComb(numbers, N,operators,cnt+1, visited,opOrder);
+            opOrder.pop_back();
+            visited[i] = false;
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int N;
+    cin >> N;
+    vector<int>numbers(N+1);
+    for(int i = 1; i <= N; i++){
+        cin >> numbers[i];
+    }
+    vector<char>operators;
+    for(int i = 1; i <= 4; i++){
+        int a;
+        cin >> a;
+        for(int j = 0; j < a; j++){
+            if(i == 1){
+                operators.push_back('+');
+            }
+            else if(i == 2){
+                operators.push_back('-');
+            }
+            else if(i == 3){
+                operators.push_back('x');
+            }
+            else if(i == 4){
+                operators.push_back('/');
+            }
+        }
+    }
+
+    vector<bool> visited(N-1,false);
+    vector<char> opOrder;
+
+    calculateComb(numbers, N, operators,0, visited, opOrder);
+
+    cout<< max_ans << endl;
+    cout<< min_ans << endl;
+
+}
