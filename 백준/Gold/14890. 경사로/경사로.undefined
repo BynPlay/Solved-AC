@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+const int INF = 1e9; 
+
+int N;
+int L;
+vector<vector<int>>Map(101,vector<int>(101));
+
+vector<int> d_row {1,0};
+vector<int> d_col {0,1};
+
+// 모든 칸 높이 같음
+// 경사로를 놓을 수 있으 (높이 1, 길이 L)
+// dir = 0 아래로 / dir = 1 오른쪽으로
+
+int chkWay(pair<int,int>start,int dir){
+    int row = start.first; int col = start.second;
+    int on_runway = L;
+    pair<int,int> start_point = {row - d_row[dir], col - d_col[dir]};
+
+    //cout << row << ' ' << col << ": "; 
+    
+    while(true){
+        int nr = row + d_row[dir];
+        int nc = col + d_col[dir];
+
+        //cout << Map[row][col] << ' ';
+
+        if(nr == N+1 || nc == N+1){
+            if(on_runway == L){
+                break;
+            }
+        }
+
+        //같으면 지나감
+        if(Map[row][col] == Map[nr][nc] && on_runway == L){
+            row = nr;
+            col = nc;
+            continue;
+        }
+        else if(Map[row][col] == Map[nr][nc]){
+            on_runway--;
+            if(on_runway == 0){
+                on_runway = L;
+                start_point = {nr,nc};
+            }
+            row = nr;
+            col = nc;
+            continue;
+        }
+
+        if(Map[row][col] -1 == Map[nr][nc] && on_runway == L){
+            on_runway--;
+            if(on_runway == 0){
+                on_runway = L;
+                start_point = {nr,nc};
+            }
+            row = nr;
+            col = nc;
+            continue;
+        }
+
+        if(Map[row][col] +1 == Map[nr][nc] && on_runway == L){
+            if((row - start_point.first) + (col - start_point.second) >= L){
+                start_point = {row,col};
+                row = nr;
+                col = nc;
+                continue;
+            }
+        }
+
+        //cout << endl;
+        return 0;
+    }
+
+    //cout << endl;
+    return 1;
+    
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N >> L;
+    for(int i = 1; i <= N; i++){
+        for(int j = 1; j <= N; j++){
+            cin >> Map[i][j];
+        }
+    }
+
+
+    int ans {0};
+    
+    for(int i = 1; i <= N; i++){
+        ans += chkWay({1,i},0);
+    }
+
+    for(int j = 1; j <= N; j++){
+        ans += chkWay({j,1},1);
+    }
+    
+    cout << ans;
+    
+
+}
