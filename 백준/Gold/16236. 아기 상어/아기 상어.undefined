@@ -1,0 +1,98 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+const int INF = 1e9; 
+
+const int dRow[4] = {1,-1,0,0};
+const int dCol[4] = {0,0,1,-1};
+
+int N;
+int space[21][21];
+pair<int,int>babyShark;
+int SharkSize {2};
+int Ans_time {0};
+bool isFinished {false};
+int nowEat {0};
+
+bool FindOne(const tuple<int,int,int>& Candidates_A, const tuple<int,int,int>& Candidates_B){
+    if(get<2>(Candidates_A) == get<2>(Candidates_B) && get<0>(Candidates_A) == get<0>(Candidates_B)){
+        return get<1>(Candidates_A) < get<1>(Candidates_B);
+    }
+    else if(get<2>(Candidates_A) == get<2>(Candidates_B)){
+        return get<0>(Candidates_A) < get<0>(Candidates_B);
+    }
+    else{
+        return get<2>(Candidates_A) < get<2>(Candidates_B);
+    }
+}
+
+void bfs_findPrey(vector<vector<bool>>& visited){
+
+    queue<tuple<int,int,int>>q;
+    q.push({babyShark.first,babyShark.second,0});
+    visited[babyShark.first][babyShark.second] = true;
+    vector<tuple<int,int,int>>Candidates;
+
+    while(!q.empty()){
+        tuple<int,int,int> now = q.front();
+        q.pop();
+        
+        if(space[get<0>(now)][get<1>(now)] < SharkSize && space[get<0>(now)][get<1>(now)] > 0){
+        Candidates.push_back(now);
+        }
+
+        for(int i = 0; i < 4; i++){
+            int nr = get<0>(now) + dRow[i]; int nc = get<1>(now) + dCol[i];
+            if(nr > 0 && nr <= N && nc > 0 && nc <= N){
+                if(visited[nr][nc] == false && space[nr][nc] <= SharkSize){
+                    q.push({nr,nc,get<2>(now) + 1});
+                    visited[nr][nc] = true;
+                }
+            }
+        } 
+    }
+        
+
+    if(Candidates.size() == 0){
+        isFinished = true;
+        cout << Ans_time;
+    }
+    else{
+        sort(Candidates.begin(),Candidates.end(),FindOne);
+        nowEat++;
+        if(nowEat == SharkSize){
+        SharkSize++;
+        nowEat = 0;
+        }
+        space[get<0>(Candidates[0])][get<1>(Candidates[0])] = 0;
+        babyShark = {get<0>(Candidates[0]),get<1>(Candidates[0])};
+        Ans_time += get<2>(Candidates[0]);
+    }
+    
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N;
+    for(int i= 1; i <= N ;i++){
+        for(int j = 1; j <= N ; j++){
+            cin >> space[i][j];
+            if(space[i][j] == 9){
+                babyShark = {i,j};
+                space[i][j] = 0;
+            }
+        }
+    }
+
+    while(isFinished == false){
+        vector<vector<bool>> visited(N+1,vector<bool>(N+1,false));
+        bfs_findPrey(visited);
+    }
+}
