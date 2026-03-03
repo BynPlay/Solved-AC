@@ -1,0 +1,178 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+const int EMPTY = 6; 
+const int dr[4] = {1,-1,0,0};
+const int dc[4] = {0,0,1,-1};
+
+int N;
+int M;
+vector<vector<int>>matrix(21,vector<int>(21));
+
+int ans {0};
+
+void printMatrix();
+void rotate90();
+void gravity();
+
+int count_rainbowblock(const vector<pair<int,int>>& max_group){
+    int cnt_rainbow {0};
+    for(auto &i: max_group){
+        if(matrix[i.first][i.second] == 0){
+            cnt_rainbow++;
+        }
+    }
+    return cnt_rainbow;
+}
+
+void explosion(vector<vector<pair<int,int>>>& candidates){
+    int max_size = 0;
+    vector<pair<int,int>>max_group;
+
+    for(auto &i: candidates){
+        if(i.size() >= max_size){
+            if(i.size() > max_size){
+                max_size = i.size();
+                max_group = i;
+            }
+            else if(i.size() == max_size){
+                if(count_rainbowblock(max_group) <= count_rainbowblock(i)){
+                    max_size = i.size();
+                    max_group = i;
+                };
+            }
+        }
+    }
+    int exploded {0};
+    for(auto & i: max_group){
+        matrix[i.first][i.second] = EMPTY;
+        exploded++;
+    }
+    ans += (exploded * exploded);
+}
+
+
+vector<pair<int,int>> findGroups_BFS(vector<vector<bool>>& visited, int sr, int sc){ // 주의점: 큰 순서 - 무지개 블록 수 - 기준 블록의 행 큰 순서, 열 큰 순서 (기준블록은 무지개 블록이 아니고 행 - 열 가장 작은 블록) 
+
+    int groupcolor = matrix[sr][sc];
+    
+    vector<pair<int,int>>groups_loc;
+    queue<pair<int,int>>q;
+    q.push({sr,sc});
+    visited[sr][sc] = true;
+    groups_loc.push_back({sr,sc});
+
+    while(!q.empty()){
+        pair<int,int>now = q.front();
+        q.pop();
+
+        for(int i = 0; i < 4; i++){
+            int nr = now.first + dr[i]; int nc = now.second + dc[i];
+            if(nr >= 1 && nr <= N && nc >= 1 && nc <= N){
+                if(visited[nr][nc] == false){
+                    if(matrix[nr][nc] == groupcolor || matrix[nr][nc] == 0){
+                        groups_loc.push_back({nr,nc});
+                        q.push({nr,nc});
+                        visited[nr][nc] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    for(auto & i : groups_loc){
+        if(matrix[i.first][i.second] == 0){
+            visited[i.first][i.second] = false;
+        }
+    }
+
+    return groups_loc;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cin >> N >> M;
+
+    
+    for(int i = 1; i <= N; i++){
+        for(int j = 1; j <= N; j++){
+            cin >> matrix[i][j];
+        }
+    }
+
+
+    while(true){
+    vector<vector<bool>>visited(N+1,vector<bool>(N+1,false));
+    vector<vector<pair<int,int>>>candidates;
+    for(int i = 1; i <= N ;i++){
+        for(int j = 1; j <= N ;j++){
+            if(matrix[i][j] != -1 && matrix[i][j] != 0 &&  matrix[i][j] != EMPTY  && visited[i][j] == false){
+                vector<pair<int,int>>chk = findGroups_BFS(visited, i, j);
+                candidates.push_back(chk);
+            }
+        }
+    }
+
+    int max_sizes = 0;
+    for(auto &i: candidates){
+        if(i.size() > max_sizes){
+            max_sizes = i.size();
+        }
+    }
+    if(max_sizes <= 1){
+        break;
+    }
+    
+    
+    explosion(candidates);
+    //printMatrix();
+    gravity();
+    rotate90();
+    gravity();
+    }
+    cout << ans;
+}
+
+
+void printMatrix(){
+    for(int i = 1; i <= N; i++){
+        for(int j = 1; j <= N; j++){
+            cout << matrix[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
+
+void rotate90(){
+    vector<vector<int>>cm = matrix;
+    for(int i = 1; i <= N ;i++){
+        for(int j = 1; j <= N ;j++){
+            cm[i][j] = matrix[j][N+1-i];
+        }
+    }
+    matrix = cm;
+}
+
+void gravity(){ 
+    for(int i = 2; i <= N; i++){ // 4 -> N
+        for(int row = N; row >= i; row--){ // 4-> N
+            for(int col = 1; col <= N;col++){
+                if(matrix[row][col] == EMPTY){
+                if(matrix[row-1][col] != -1){
+                    matrix[row][col] = matrix[row-1][col];
+                    matrix[row-1][col] = EMPTY;
+                }
+            }
+            }
+        }
+    }
+}
