@@ -1,0 +1,119 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+const int drc[8][2] = {{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1},{1,0},{1,1},{0,1}};
+const int SHARK = 17;
+
+//물고기 방햘
+
+int ans{0};
+
+vector<vector<pair<int,int>>>Space(4,vector<pair<int,int>>(4));
+void printSpace(const vector<vector<pair<int,int>>>& copiedSpace);
+
+void fishMove(vector<vector<pair<int,int>>>& CopiedSpace){
+    int now_fish = 1;
+    bool is_changed {false};
+    
+    while(now_fish <= 16){
+    for(int row = 0; row < 4; row++){
+        for(int col = 0; col < 4; col++){
+            if(CopiedSpace[row][col].first == now_fish && is_changed == false){
+                for(int i = 0; i < 8 ;i++){
+                    int nr = row + drc[(CopiedSpace[row][col].second + i) % 8][0]; int nc = col + drc[(CopiedSpace[row][col].second + i) % 8][1] ;
+                    if(nr >= 0 && nr < 4 && nc >= 0 && nc < 4){
+                        if(CopiedSpace[nr][nc].first != SHARK){
+                            CopiedSpace[row][col].second = (CopiedSpace[row][col].second + i) % 8;
+                            swap(CopiedSpace[row][col],CopiedSpace[nr][nc]);
+                            is_changed = true;
+                            break;
+                        }
+                    }
+                }
+            } 
+        }
+    }
+        now_fish++;
+        is_changed = false;
+    }
+}
+
+void sharkMove(){
+    queue<tuple<int,int,int,vector<vector<pair<int,int>>>,int>>q;
+    vector<vector<pair<int,int>>>CopiedSpace = Space;
+    int sum {CopiedSpace[0][0].first};
+    CopiedSpace[0][0].first = 17;
+    fishMove(CopiedSpace);
+    q.push({0,0,Space[0][0].second,CopiedSpace,sum});
+
+    while(!q.empty()){
+        tuple<int,int,int,vector<vector<pair<int,int>>>,int>now = q.front();
+        q.pop();
+        int now_r = get<0>(now);
+        int now_c = get<1>(now);
+        int next_r = now_r;
+        int next_c = now_c;
+
+        if(get<4>(now) > ans){
+            ans = get<4>(now);
+        }
+
+        while(true){
+            next_r += drc[get<2>(now)][0];
+            next_c += drc[get<2>(now)][1];
+            
+            if(next_r < 0 || next_r >= 4 || next_c < 0 || next_c >= 4){
+                break;
+            }
+            
+            if(get<3>(now)[next_r][next_c].first != 0){
+                vector<vector<pair<int,int>>>NowSpace = get<3>(now);
+                sum = get<4>(now) + NowSpace[next_r][next_c].first;
+                NowSpace[now_r][now_c].first = 0;
+                NowSpace[next_r][next_c].first = SHARK;
+                int next_dir = NowSpace[next_r][next_c].second;
+                fishMove(NowSpace);
+                q.push({next_r,next_c,next_dir,NowSpace,sum});
+            }   
+        }
+    } 
+}
+
+
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 4; j++){
+            cin >> Space[i][j].first >> Space[i][j].second;
+        }
+    }
+    sharkMove();
+    cout << ans;
+    
+}
+
+
+//////////////////////////////////////////////////////////////
+// Debugging Utilities
+//////////////////////////////////////////////////////////////
+
+void printSpace(const vector<vector<pair<int,int>>>& copiedSpace){
+    for(int i = 0; i < 4 ;i++){
+        for(int j = 0; j < 4 ;j++){
+            cout << copiedSpace[i][j].first << ',' << copiedSpace[i][j].second << ' ';
+        }
+        cout << endl;
+    }
+}
+
