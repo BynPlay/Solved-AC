@@ -17,7 +17,7 @@ vector<int>order; //순서는 0부터 시작
 
 void arrangeStudents(int student_num){
     pair<int,int>max = {-1,-1}; // first 친구, second 빈공간
-    pair<int,int>confirmed {-1,-1};
+    pair<int,int>confirmed {0,0};
 
     for(int i = 1; i <= N ; i++){
         for(int j = 1; j <= N ; j++){
