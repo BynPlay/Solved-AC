@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+// 회전 함수 (시계, 반시)
+// 극이 다르면 반대방향 회전 시계 - 반시계 / 반시계 - 시
+
+int d[2] = {-1,1};
+
+int ans {0};
+
+int K;
+
+void rotateWheel(string& wheel, int dir){
+    if(dir == 1){
+        char tmp = wheel[7];
+        for(int i = 7; i >= 1 ;i--){
+            wheel[i] = wheel[i-1];
+        }
+        wheel[0] = tmp;
+    }
+    else if(dir == -1){
+        char tmp = wheel[0];
+        for(int i = 0; i <= 6 ;i++){
+            wheel[i] = wheel[i+1];
+        }
+        wheel[7] = tmp;
+    }
+}
+
+vector<string> rotateSimulate(const vector<string>& Wheels, int num, int dir, vector<bool>& visited){
+    vector<string>SimulatedWheels = Wheels;
+    queue<pair<int,int>>q;
+    rotateWheel(SimulatedWheels[num],dir);
+    q.push({num,-dir});
+    visited[num] = true;
+    
+
+    while(!q.empty()){
+        pair<int,int>now = q.front();
+        q.pop();
+
+        for(int i = 0; i <2; i++){
+            int n = now.first + d[i];
+            if(n >= 0 && n < 4){
+                if(visited[n] == false){
+                    if(i == 1 && Wheels[now.first][2] != Wheels[n][6]){
+                        rotateWheel(SimulatedWheels[n],now.second);
+                        q.push({n,-now.second});
+                        visited[n] = true;
+                    }
+                    else if(i == 0 && Wheels[n][2] != Wheels[now.first][6]){
+                        rotateWheel(SimulatedWheels[n],now.second);
+                        q.push({n,-now.second});
+                        visited[n] = true;
+                    }
+            }
+        }
+    }
+}
+    return SimulatedWheels;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    vector<string>Wheels(4);
+
+    for(int i = 0; i < 4; i++){
+        cin >> Wheels[i];
+    }
+
+    cin >> K;   
+    for(int i = 0; i < K; i++){
+        int num; int dir;
+        cin >> num >> dir;
+        vector<bool> v(4,false);
+        Wheels = rotateSimulate(Wheels,num-1, dir,v);
+    }
+
+    for(int i = 0; i < 4; i++){
+        if(Wheels[i][0] == '1'){
+            ans += pow(2,i);
+        } 
+    }
+    cout << ans;
+}
