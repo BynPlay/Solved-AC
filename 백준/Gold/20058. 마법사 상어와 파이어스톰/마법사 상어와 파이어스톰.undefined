@@ -1,0 +1,153 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+const int dx[4] = {-1,1,0,0};
+const int dy[4] = {0,0,-1,1};
+
+int N,Q;
+int Matrix[65][65];
+int ans_rest {0};
+int ans_biggest {0};
+
+void divideMatrix(int L, int m_size);
+void rotateClock90(int row_start,int col_start,int dividedm_size);
+void meltIce(int m_size);
+void fireStorm();
+int adjacentIceBiggest(vector<vector<bool>>& visited,int m_size, int sr, int sc);
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N >> Q;
+    int m_size = pow(2,N);
+
+    for(int row = 1; row <= m_size ;row++){
+        for(int col = 1; col <= m_size ;col++){
+            cin >> Matrix[row][col];
+        }
+    }
+
+    int iterate = 0;
+
+    while(iterate < Q){
+        
+        int L;
+        cin >> L;
+        divideMatrix(L,m_size);
+        meltIce(m_size);
+        
+        iterate++;
+    }
+
+    for(int row = 1; row <= m_size ;row++){
+        for(int col = 1; col <= m_size ;col++){
+            ans_rest += Matrix[row][col];
+        }
+    }
+
+    cout << ans_rest << endl;
+
+    vector<vector<bool>> visited(m_size+1,vector<bool>(m_size+1,false));
+    for(int row = 1; row <= m_size ;row++){
+        for(int col = 1; col <= m_size ;col++){
+            if(visited[row][col] == false && Matrix[row][col] != 0){
+                int blockcnt = adjacentIceBiggest(visited,m_size, row, col);
+                if(ans_biggest < blockcnt){
+                    ans_biggest = blockcnt;
+                };
+            }
+        }
+    }
+    
+    cout << ans_biggest;
+}
+
+void divideMatrix(int L, int m_size){
+    int dividedm_size = pow(2,L);
+
+    for(int row = 1; row < m_size + 1; row += dividedm_size){
+        for(int col = 1; col < m_size + 1; col += dividedm_size){
+            rotateClock90(row,col,dividedm_size);
+        }
+    }
+    
+}
+
+void rotateClock90(int row_start,int col_start,int dividedm_size){
+    int copiedMatrix[dividedm_size][dividedm_size] = {};  
+
+     for(int row = 0; row < dividedm_size ;row++){
+        for(int col = 0; col < dividedm_size ;col++){
+            copiedMatrix[row][col] = Matrix[row_start+dividedm_size-1-col][col_start+row];
+        }
+    }
+
+    for(int row = 0; row < dividedm_size ;row++){
+        for(int col = 0; col < dividedm_size ;col++){
+            Matrix[row_start+row][col_start+col]= copiedMatrix[row][col];
+        }
+    }
+}
+
+void meltIce(int m_size){
+    int tmpMatrix[65][65];
+    memcpy(tmpMatrix,Matrix,sizeof(Matrix));
+    
+    for(int row = 1; row <= m_size ;row++){
+        for(int col = 1; col <= m_size ;col++){
+            if(Matrix[row][col] != 0){
+                int adjacenIceNum {0};
+                for(int d = 0; d < 4 ; d++){
+                    int nr = row + dx[d]; int nc = col + dy[d];
+                    if(nr >= 1 && nr <= m_size && nc >= 1 && nc <= m_size){
+                        if(Matrix[nr][nc] > 0){
+                            adjacenIceNum++;
+                        }
+                    }
+                }
+                if(adjacenIceNum < 3){
+                    tmpMatrix[row][col]--;
+                }
+            }
+        }
+    }
+    memcpy(Matrix,tmpMatrix,sizeof(tmpMatrix));
+}
+
+int adjacentIceBiggest(vector<vector<bool>>& visited,int m_size, int sr, int sc){
+    int cnt {0};
+    queue<pair<int,int>>q;
+    q.push({sr,sc});
+    visited[sr][sc] = true;
+    cnt++;
+
+    while(!q.empty()){
+        pair<int,int>now = q.front();
+        q.pop();
+
+        for(int d = 0; d < 4; d++){
+            int nr = now.first + dx[d]; int nc = now.second + dy[d];
+            if(nr >= 1 && nr <= m_size && nc >= 1 && nc <= m_size){
+                if(visited[nr][nc] == false && Matrix[nr][nc] != 0){
+                    q.push({nr,nc});
+                    visited[nr][nc] = true;
+                    cnt++;
+                }
+            }
+        }
+    }
+
+    return cnt;
+}
+
+
+
+
