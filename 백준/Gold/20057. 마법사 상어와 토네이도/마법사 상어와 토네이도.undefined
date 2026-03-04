@@ -1,0 +1,132 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+const int Dir[4][2] = {{0,-1},{1,0},{0,1},{-1,0}};
+
+int N;
+int Map[500][500];
+int ans {0};
+
+void rotateCounter90(int SpreadSimulate[5][5]){
+    int tmp[5][5];
+    for(int row = 0; row < 5 ;row++){
+        for(int col = 0; col < 5 ;col++){
+            tmp[row][col] = SpreadSimulate[col][5-1-row];
+        }
+    }
+    memcpy(SpreadSimulate,tmp,sizeof(tmp));
+}
+
+void spreadSand(const pair<int,int>& MovedtornadoLoc,const int prev_dir){
+    int SpreadSimulate[5][5] = {};
+    int y = Map[MovedtornadoLoc.first][MovedtornadoLoc.second];
+    Map[MovedtornadoLoc.first][MovedtornadoLoc.second] = 0;
+    SpreadSimulate[0][2] = y*2/100;
+    SpreadSimulate[1][1] = y*10/100;
+    SpreadSimulate[1][2] = y*7/100;
+    SpreadSimulate[1][3] = y*1/100;
+
+    SpreadSimulate[2][0] = y*5/100;
+
+    SpreadSimulate[3][1] = y*10/100;
+    SpreadSimulate[3][2] = y*7/100;
+    SpreadSimulate[3][3] = y*1/100;
+
+    SpreadSimulate[4][2] = y*2/100;
+
+    int sum {0};
+
+    for(int row = 0; row < 5 ;row++){
+        for(int col = 0; col < 5 ;col++){
+            sum += SpreadSimulate[row][col];
+        }
+    }
+    SpreadSimulate[2][1] = y - sum;
+
+    for(int i = 0; i < prev_dir; i++){
+        rotateCounter90(SpreadSimulate);
+    }
+
+    for(int row = 0; row < 5 ;row++){
+        for(int col = 0; col < 5 ;col++){
+            int o_r = MovedtornadoLoc.first-2+row; int o_c = MovedtornadoLoc.second-2+col;
+            if(o_r >= 1 && o_r <= N && o_c >= 1 && o_c <= N){
+                Map[o_r][o_c] += SpreadSimulate[row][col];
+            }
+            else{
+                ans += SpreadSimulate[row][col];
+            }
+        }
+    }
+}
+
+void moveTornado(pair<int,int>& tornadoLoc,int dir){
+    tornadoLoc.first += Dir[dir][0];
+    tornadoLoc.second += Dir[dir][1];
+}
+
+void TornadoSimulation(pair<int,int>& tornadoLoc){
+
+    int now = 3;
+    int count = N / 2;
+
+    while(count > 0){
+        moveTornado(tornadoLoc,0);
+        spreadSand(tornadoLoc,0);
+
+        for(int cnt = 0; cnt < now-2 ;cnt++){
+            moveTornado(tornadoLoc,1);
+            spreadSand(tornadoLoc,1);
+        }
+
+        for(int cnt = 0; cnt < now-1 ;cnt++){
+            moveTornado(tornadoLoc,2);
+            spreadSand(tornadoLoc,2);
+        }
+
+        for(int cnt = 0; cnt < now-1 ;cnt++){
+            moveTornado(tornadoLoc,3);
+            spreadSand(tornadoLoc,3);
+        }
+
+        for(int cnt = 0; cnt < now-1 ;cnt++){
+            moveTornado(tornadoLoc,0);
+            spreadSand(tornadoLoc,0);
+        }
+
+        now += 2;
+        count--;
+    }
+        
+}
+
+
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N;
+
+    for(int row = 1; row <= N ;row++){
+        for(int col = 1; col <= N ; col++){
+            cin >> Map[row][col];
+        }
+    }
+
+    pair<int,int>tornadoLoc = {round(N/2.0),round(N/2.0)};
+    TornadoSimulation(tornadoLoc);
+
+    cout << ans;
+}
+
+
+
+
