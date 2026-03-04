@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+const int dir[8][2] = {{-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1}};
+int N,M,K;
+
+struct Fireball {
+    int r,c,m,d,s;
+    void move(){
+        r = (r + (dir[d][0] * s) % N - 1 + N) % N + 1;
+        c = (c + (dir[d][1] * s) % N - 1 + N) % N + 1;
+    }
+};
+
+vector<Fireball> Matrix[51][51];
+
+
+void moveToMatrix(vector<Fireball>& Fireballs){
+    for(auto &Fireball: Fireballs){
+        //cout << Fireball.r << ' ' << Fireball.c << ' ' << Fireball.m << endl;
+        Fireball.move();
+        Matrix[Fireball.r][Fireball.c].push_back(Fireball);
+        //cout << Fireball.r << ' ' << Fireball.c << ' ' << Fireball.m << endl;
+    }
+    Fireballs.clear();
+}
+
+void mergeAndDivide(vector<Fireball>& Fireballs){
+    for(int row = 1; row <= N ;row++){
+        for(int col = 1; col <= N; col++){
+            if(Matrix[row][col].size() >= 2){
+                int m_sum = {0}; int s_sum = {0}; int num = Matrix[row][col].size();
+                bool d_init = 0; int dir_chk = Matrix[row][col][0].d % 2;
+                for(auto & fireball : Matrix[row][col]){
+                    m_sum += fireball.m; s_sum += fireball.s;
+                    if(fireball.d % 2 != dir_chk){
+                        d_init = 1;
+                    }
+                }
+                m_sum /= 5; s_sum /= num; 
+                if(m_sum != 0){
+                    if(d_init == 0){
+                        for(int d_new = 0; d_new <= 6 ;d_new+=2){
+                            Fireballs.push_back({row,col,m_sum,d_new,s_sum});
+                        }
+                    }
+                    else if(d_init == 1){
+                        for(int d_new = 1; d_new <= 7 ;d_new+=2){
+                            Fireballs.push_back({row,col,m_sum,d_new,s_sum});
+                        }
+                    }
+                }
+            }
+            else if(Matrix[row][col].size() == 1){
+                Fireballs.push_back(Matrix[row][col][0]);
+            }
+        }
+    }
+
+    for(int row = 1; row <= N ;row++){
+        for(int col = 1; col <= N; col++){
+            Matrix[row][col].clear();
+        }
+    }
+}
+
+int calculateSum(vector<Fireball>& Fireballs){
+    int ans {0};
+    for(auto &i: Fireballs){
+        ans += i.m;
+    }
+    return ans;
+}
+
+void checkMatrix(){
+    for(int i = 1; i <= N; i++){
+        for(int j = 1; j <= N; j++){
+            if(Matrix[i][j].size() == 0){
+                cout << '0' << ' ';
+            }
+            else{
+                cout << Matrix[i][j][0].m << ' ';
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+// 질량 방향 속력
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cin >> N >> M >> K;
+    
+    vector<Fireball>Fireballs;
+    for(int i = 1; i <= M; i++){
+        Fireball F;
+        cin >> F.r >> F.c >> F.m >> F.s >> F.d;
+        Fireballs.push_back(F);
+    }
+    while(K > 0){
+        moveToMatrix(Fireballs);
+        //checkMatrix();
+        mergeAndDivide(Fireballs);
+        K--;
+    }
+
+    cout << calculateSum(Fireballs);
+
+    /*
+    for(auto F: Fireballs){
+        cout << F.r << ' ' << F.c << ' ' << F.m << ' ' << F.d << ' ' << F.s << endl;
+    }
+    */
+}
+
+
+
+
