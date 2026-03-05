@@ -1,0 +1,191 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std; 
+const int dR[5] = {0,-1,1,0,0};
+const int dC[5] = {0,0,0,-1,1};
+
+int N,M;
+int MatrixBoard[50][50];
+int Matrix[2401]; 
+pair<int,int>shark_pos;
+int d,s;
+vector<int>tmp;
+
+int exploded_beads_cnt[4];
+
+void initMatrixBoard(); 
+void castBlizzard();
+void moveBeads();
+bool explosionBeads();
+void changeBeads();
+void printMatrix();
+
+int main() {    
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> N >> M;
+    initMatrixBoard();
+    
+    for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            cin >> Matrix[MatrixBoard[row][col]];
+        }
+    }
+
+    for(int i = 0; i < M; i++){
+        cin >> d >> s;
+        castBlizzard();
+        moveBeads();
+        while(explosionBeads()){
+            moveBeads();
+        }
+        changeBeads();
+    }
+
+    cout << exploded_beads_cnt[1] + (2 * exploded_beads_cnt[2]) + (3 * exploded_beads_cnt[3]);
+
+}
+
+///////////////////////////////
+////////Implementation/////////
+///////////////////////////////
+
+void initMatrixBoard(){
+    shark_pos = {(N+1)/2,(N+1)/2};
+    pair<int,int>now_pos = shark_pos;
+    int cnt {0};
+    int start = 3;
+
+    while(start <= N){
+ 
+        now_pos.second -= 1;
+        cnt++;
+        MatrixBoard[now_pos.first][now_pos.second] = cnt;
+
+        for(int i = 0; i < start-2; i++){
+            now_pos.first += 1;
+            cnt++;
+            MatrixBoard[now_pos.first][now_pos.second] = cnt;
+        }
+
+        for(int i = 0; i < start-1; i++){
+            now_pos.second += 1;
+            cnt++;
+            MatrixBoard[now_pos.first][now_pos.second] = cnt;
+        }
+
+        for(int i = 0; i < start-1; i++){
+            now_pos.first -= 1;
+            cnt++;
+            MatrixBoard[now_pos.first][now_pos.second] = cnt;
+        }
+        
+        for(int i = 0; i < start-1; i++){
+            now_pos.second -= 1;
+            cnt++;
+            MatrixBoard[now_pos.first][now_pos.second] = cnt;
+        }
+        start += 2;
+    }
+}
+
+void castBlizzard(){
+    int blizz_r = shark_pos.first; int blizz_c = shark_pos.second; 
+    for(int cnt = 0; cnt < s; cnt++){
+        blizz_r += dR[d];
+        blizz_c += dC[d];
+        if(blizz_r >= 1 && blizz_r <= N && blizz_c >= 1 && blizz_c <= N){
+            Matrix[MatrixBoard[blizz_r][blizz_c]] = 0;
+        }
+    }
+}
+
+void moveBeads(){
+    int blanked {0}; int max_blanked {0};
+    int i = 0;
+    while(i < N * N){
+        i++;
+        if(Matrix[i] == 0){
+            blanked++;
+        }
+        else{
+            if(blanked != 0){
+                for(int j = i; j < N * N;j++){
+                    Matrix[j-blanked] = Matrix[j];
+                }
+                max_blanked += blanked;
+                for(int k = 1; k <= max_blanked; k++){
+                    Matrix[N * N - k] = 0;
+                }
+                blanked = 0;
+                i = 0;
+            }
+        }
+    }
+}
+
+bool explosionBeads(){
+    int cnt {0}; int start_pos {1}; bool is_Exploded {false};
+    for(int i = 1; i < N * N ; i++){
+        if(Matrix[i] == Matrix[start_pos]){
+            cnt++;
+        }
+        else if(Matrix[i] != Matrix[start_pos]){
+            if(cnt >= 4){
+                is_Exploded = true;
+                exploded_beads_cnt[Matrix[start_pos]] += cnt;
+                for(int j = 0; j < cnt;j++){
+                    Matrix[start_pos+j] = 0;
+                }
+            }
+            cnt = 1;
+            start_pos = i;
+        }
+    }
+    return is_Exploded;
+}
+
+void changeBeads(){
+    int cnt {0}; int start_pos {1};
+    for(int i = 1; i < N * N ; i++){
+        if(Matrix[i] == Matrix[start_pos]){
+            cnt++;
+        }
+        else if(Matrix[i] != Matrix[start_pos]){
+            int A = cnt; int B = Matrix[start_pos];
+            tmp.push_back(A); tmp.push_back(B); 
+            cnt = 1;
+            start_pos = i;
+        }
+    }
+    int newMatrix[2401] = {};
+    for(int i = 0; i < tmp.size(); i++){
+        if(i+1 < N * N){
+            newMatrix[i+1] = tmp[i];
+        }
+    }
+    tmp.clear();
+    memcpy(Matrix,newMatrix,sizeof(newMatrix));
+}
+
+void printMatrix(){
+     for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            cout << Matrix[MatrixBoard[row][col]] << ' ';
+        }
+         cout << endl;
+     }
+    cout << endl;
+}
+
+
+
+
