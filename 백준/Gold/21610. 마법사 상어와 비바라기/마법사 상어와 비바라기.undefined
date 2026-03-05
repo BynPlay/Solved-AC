@@ -1,0 +1,140 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std; // ←, ↖, ↑, ↗, →, ↘, ↓, ↙
+const int D[9][2] = {{},{0,-1},{-1,-1},{-1,0},{-1,1},{0,1},{1,1},{1,0},{1,-1}};
+
+int N,M;
+int di,si;
+int Matrix[51][51];
+
+struct Cloud{
+    int r;
+    int c;
+};
+
+vector<Cloud>Clouds;
+
+void moveCloud();
+void rainFromCloud();
+void disappearCloud(vector<pair<int,int>>& disappered_cloud);
+void waterCopyBug(vector<pair<int,int>>basket_water_up);
+void appearCloud(vector<pair<int,int>>& disappered_cloud);
+int calculateWater();
+void printMatrix();
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cin >> N >> M;
+
+    for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            cin >> Matrix[row][col];
+        }
+    }
+
+    Clouds.push_back({N,1});
+    Clouds.push_back({N,2});
+    Clouds.push_back({N-1,1});
+    Clouds.push_back({N-1,2});
+
+    
+    for(int i = 0; i < M; i++){
+        cin >> di >> si;
+        moveCloud();
+        rainFromCloud();
+    }
+
+    cout << calculateWater();
+}
+
+///////////////////////////////
+////////Implementation/////////
+///////////////////////////////
+
+void moveCloud(){
+    for(auto &cloud : Clouds){
+        cloud.r = (cloud.r + (D[di][0] * si) % N + N - 1 ) % N + 1;
+        cloud.c = (cloud.c + (D[di][1] * si) % N + N - 1 ) % N + 1;
+    }
+}
+void rainFromCloud(){
+    vector<pair<int,int>>basket_water_up;
+    for(auto &i: Clouds){
+        Matrix[i.r][i.c]++;
+        basket_water_up.push_back({i.r,i.c});
+    }
+    
+    vector<pair<int,int>>disappered_cloud;
+    disappearCloud(disappered_cloud);
+    waterCopyBug(basket_water_up);
+    appearCloud(disappered_cloud);
+}
+void disappearCloud(vector<pair<int,int>>& disappered_cloud){
+    for(auto &i : Clouds){
+        disappered_cloud.push_back({i.r,i.c});
+    }
+    Clouds.clear();
+}
+void waterCopyBug(vector<pair<int,int>>basket_water_up){
+    for(auto &i: basket_water_up){
+        int cnt {0};
+        for(int d = 2; d <= 8 ; d += 2){
+            int nr = i.first + D[d][0]; int nc = i.second + D[d][1];
+            if(nr >= 1 && nr <= N && nc >= 1 && nc <= N){
+                if(Matrix[nr][nc] > 0){
+                    cnt++;
+                }
+            }
+        }
+        Matrix[i.first][i.second] += cnt;
+    }
+    basket_water_up.clear();
+}
+void appearCloud(vector<pair<int,int>>& disappered_cloud){ // 이때 구름이 생기는 칸은 3에서 구름이 사라진 칸이 아니어야 한다.
+    for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            if(Matrix[row][col] >= 2){
+                int chk = true;
+                for(auto &i : disappered_cloud){
+                    if(row == i.first && col == i.second){
+                        chk = false;
+                    }
+                }
+                if(chk == true){
+                    Matrix[row][col] -= 2;
+                    Cloud cloud = {row,col};
+                    Clouds.push_back(cloud);
+                }
+            }
+        }
+    }
+    disappered_cloud.clear();
+}
+int calculateWater(){
+    int ans {0};
+    for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            if(Matrix[row][col] > 0){
+                ans += Matrix[row][col];
+            }       
+        }
+    }
+    return ans;
+}
+void printMatrix(){
+    for(int row = 1; row <= N; row++){
+        for(int col = 1; col <= N; col++){
+            cout << Matrix[row][col] << ' ';     
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
