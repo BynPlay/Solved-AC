@@ -16,7 +16,7 @@ struct DragonCurve {
     int y;
     int d;
     int g;
-    int prevDir[1024] = { 0 };
+    int prevDir[1024];
 
     void makeImprint() {
         Matrix[y][x] = true; int size{ 0 };
