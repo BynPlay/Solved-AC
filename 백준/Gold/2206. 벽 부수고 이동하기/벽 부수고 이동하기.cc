@@ -40,6 +40,14 @@ int moveToEnd() {
     while (!q.empty()) {
         Man now = q.front(); q.pop();
 
+        if (now.row == N && now.col == M) {
+            int a = Dist[N][M][0];
+            int b = Dist[N][M][1];
+            if (a == 0) return b;
+            if (b == 0) return a;
+            return min(a, b);
+        }
+
         for (int d = 0; d < 4; d++) {
             int nr = now.row + Dr[d]; int nc = now.col + Dc[d];
             if (inBound(nr, nc)) {
@@ -65,12 +73,7 @@ int moveToEnd() {
         }
     }
 
-    int a = Dist[N][M][0];
-    int b = Dist[N][M][1];
-    if (a == 0 && b == 0) return -1;
-    if (a == 0) return b;
-    if (b == 0) return a;
-    return min(a, b);
+    return -1;
 }
 
 int main() {
