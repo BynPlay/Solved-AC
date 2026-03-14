@@ -125,7 +125,7 @@ void calculateR() {
             }
         }
         vector<pair<int, int>> new_cnt(cnt.begin(), cnt.end());
-        sort(new_cnt.begin(), new_cnt.end(), [](pair<int, int> A, pair<int, int> B) {if (A.second == B.second) {return A.first < B.first; } return A.second < B.second; });
+        sort(new_cnt.begin(), new_cnt.end(), [](pair<int, int> A, pair<int, int> B) {if (A.second == B.second) { return A.first < B.first; } return A.second < B.second; });
         now_max_C = new_cnt.size() * 2;
 
         if (now_max_C > 100) {
