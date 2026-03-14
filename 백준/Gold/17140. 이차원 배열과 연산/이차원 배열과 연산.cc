@@ -63,7 +63,7 @@ int main() {
         day++;
     }
 
-    if (day > 100) {
+    if (day == 101) {
         cout << -1;
     }
     else {
@@ -74,10 +74,10 @@ int main() {
 
 
 void calculateC() {
-    int cnt[101] = {}; int MAX = { 0 }; int TMP[101][101] = {};
+    int cnt[101] = {}; int MAX = max_R; int TMP[101][101] = {};
     for (int col = 1; col <= max_C; col++) {
         map<int, int>cnt; int now_max_R{ 0 };
-        for (int row = 1; row <= max_R; row++) {
+        for (int row = 1; row <= MAX; row++) {
             if (A[row][col] != 0) {
                 cnt[A[row][col]]++;
             }
@@ -85,11 +85,6 @@ void calculateC() {
         vector<pair<int, int>> new_cnt(cnt.begin(), cnt.end());
         sort(new_cnt.begin(), new_cnt.end(), [](pair<int, int> A, pair<int, int> B) {if (A.second == B.second) { return A.first < B.first; } return A.second < B.second; });
         now_max_R = new_cnt.size() * 2;
-
-        if (now_max_R > 100) {
-            now_max_R = 100;
-        }
-
         for (int row = 1; row <= now_max_R; row++) {
             if (row % 2 == 0) {
                 TMP[row][col] = new_cnt[((row + 1) / 2) - 1].second;
@@ -98,13 +93,10 @@ void calculateC() {
                 TMP[row][col] = new_cnt[((row + 1) / 2) - 1].first;
             }
         }
-        if (now_max_R > MAX) {
-            MAX = now_max_R;
+        if (now_max_R > max_R) {
+            max_R = now_max_R;
         }
     }
-
-    max_R = MAX;
-
     for (int row = 1; row <= max_R; row++) {
         for (int col = 1; col <= max_C; col++) {
             if (TMP[row][col] == 0) {
@@ -116,10 +108,10 @@ void calculateC() {
 }
 
 void calculateR() {
-    int cnt[101] = {}; int MAX = { 0 };  int TMP[101][101] = {};
+    int cnt[101] = {}; int MAX = max_C; int TMP[101][101] = {};
     for (int row = 1; row <= max_R; row++) {
         map<int, int>cnt; int now_max_C{ 0 };
-        for (int col = 1; col <= max_C; col++) {
+        for (int col = 1; col <= MAX; col++) {
             if (A[row][col] != 0) {
                 cnt[A[row][col]]++;
             }
@@ -127,11 +119,6 @@ void calculateR() {
         vector<pair<int, int>> new_cnt(cnt.begin(), cnt.end());
         sort(new_cnt.begin(), new_cnt.end(), [](pair<int, int> A, pair<int, int> B) {if (A.second == B.second) { return A.first < B.first; } return A.second < B.second; });
         now_max_C = new_cnt.size() * 2;
-
-        if (now_max_C > 100) {
-            now_max_C = 100;
-        }
-
         for (int col = 1; col <= now_max_C; col++) {
             if (col % 2 == 0) {
                 TMP[row][col] = new_cnt[((col + 1) / 2) - 1].second;
@@ -140,13 +127,10 @@ void calculateR() {
                 TMP[row][col] = new_cnt[((col + 1) / 2) - 1].first;
             }
         }
-        if (now_max_C > MAX) {
-            MAX = now_max_C;
+        if (now_max_C > max_C) {
+            max_C = now_max_C;
         }
     }
-
-    max_C = MAX;
-
     for (int row = 1; row <= max_R; row++) {
         for (int col = 1; col <= max_C; col++) {
             if (TMP[row][col] == 0) {
