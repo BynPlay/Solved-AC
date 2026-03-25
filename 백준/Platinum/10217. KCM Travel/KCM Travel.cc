@@ -56,14 +56,7 @@ void findMinimum() {
 
         for (auto& edge : GRAPH[now.nownum]) {
             if (now.costsum + edge.cost <= M && DP[edge.to][now.costsum + edge.cost] > DP[now.nownum][now.costsum] + edge.distance) {
-                for (int cost = now.costsum + edge.cost; cost <= M; cost++) {
-                    if (DP[edge.to][cost] > DP[now.nownum][now.costsum] + edge.distance) {
-                        DP[edge.to][cost] = DP[now.nownum][now.costsum] + edge.distance;
-                    }        
-                    else {
-                        break;
-                    }
-                }
+                DP[edge.to][now.costsum + edge.cost] = DP[now.nownum][now.costsum] + edge.distance;
                 pq.push({ edge.to , DP[edge.to][now.costsum + edge.cost], now.costsum + edge.cost });
             }
         }
