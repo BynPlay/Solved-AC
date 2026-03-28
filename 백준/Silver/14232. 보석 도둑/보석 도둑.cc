@@ -1,30 +1,51 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
+#include <stack>
+#include <unordered_set>
+#include <string>
+#include <queue>
 #include <algorithm>
+#include <cstring>
+#include <climits>
+
 using namespace std;
+const int INF{ INT_MAX };
+
+struct RobotCat {
+    int pos;
+    string turn;
+};
+
+bool inbound(int n, int A);
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    long long k;
-    cin >> k;
+    //freopen("input.txt", "r", stdin);
+    
+    long long k; cin >> k; long long now = k;
 
-    vector<long long> v;
+    long long cnt{ 0 }; vector<long long>v; long long num = 2;
 
-    for (long long i = 2; i * i <= k; i++) {
-        while (k % i == 0) {
-            v.push_back(i);
-            k /= i;
-        }
+while ((long long)num * num <= now) {  // k → now
+    if (now % num == 0) {
+        now /= num;
+        v.push_back(num);
+        cnt++;
+        continue;
     }
+    num++;
+}
 
-    if (k > 1) v.push_back(k);
+if (now > 1) {
+    cnt++;
+    v.push_back(now);
+}
 
-    sort(v.begin(), v.end());
-
-    cout << v.size() << "\n";
-    for (auto x : v) cout << x << " ";
-
-    return 0;
+    cout << cnt << endl;
+    for (auto& i : v) {
+        cout << i << ' ';
+    }
 }
